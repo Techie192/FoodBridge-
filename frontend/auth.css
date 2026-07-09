@@ -1,0 +1,34 @@
+/* 🔐 Role badge (Restaurant / NGO / Compost / Admin) */
+.role-badge {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #2e7d32;
+}
+
+/* ⏳ Pending / Not verified */
+.status-warning {
+  color: #e65100;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ✅ Verified */
+.status-success {
+  color: #1b5e20;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ❌ Error */
+.status-error {
+  color: #b71c1c;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* 🧑‍💼 Admin panel button */
+.admin-btn {
+  background: #263238;
+  color: #fff;
+}

@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Tracking | FoodBridge</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #1DB954;
+      --dark: #0A0E27;
+      --light: #F8FAFC;
+      --accent: #FFB800;
+      --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-2: linear-gradient(135deg, #1DB954 0%, #0E8E3E 100%);
+      --gradient-3: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--dark);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated Background */
+    .auth-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .gradient-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      animation: float 10s ease-in-out infinite;
+    }
+
+    .orb1 {
+      width: 400px;
+      height: 400px;
+      background: var(--gradient-1);
+      top: -10%;
+      right: -5%;
+    }
+
+    .orb2 {
+      width: 350px;
+      height: 350px;
+      background: var(--gradient-2);
+      bottom: -5%;
+      left: -5%;
+      animation-delay: 2s;
+    }
+
+    .orb3 {
+      width: 300px;
+      height: 300px;
+      background: var(--gradient-3);
+      top: 50%;
+      left: 50%;
+      animation-delay: 4s;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      50% {
+        transform: translate(20px, -20px) scale(1.1);
+      }
+    }
+
+    /* Container */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* Header */
+    .header {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 24px 32px;
+      margin-bottom: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 700;
+      background: var(--gradient-2);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--light);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    /* Page Title */
+    .page-title {
+      font-size: 48px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .page-subtitle {
+      color: rgba(248, 250, 252, 0.6);
+      font-size: 18px;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    /* Map Section */
+    .map-section {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .map-header {
+      margin-bottom: 24px;
+    }
+
+    .map-header h3 {
+      font-size: 24px;
+      color: var(--light);
+      margin-bottom: 8px;
+    }
+
+    .map-status {
+      color: rgba(248, 250, 252, 0.6);
+      font-size: 14px;
+    }
+
+    .map-status.live {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    #map {
+      height: 500px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: 0 12px 40px rgba(29, 185, 84, 0.2);
+    }
+
+    .stat-card h3 {
+      color: rgba(248, 250, 252, 0.7);
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    .stat-card p {
+      color: var(--light);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    /* Vehicle List */
+    .vehicle-list {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 32px;
+      margin-bottom: 32px;
+    }
+
+    .vehicle-list h3 {
+      font-size: 24px;
+      color: var(--light);
+      margin-bottom: 24px;
+    }
+
+    .vehicle-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .vehicle-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateX(8px);
+    }
+
+    .vehicle-item.active {
+      border-color: var(--primary);
+      background: rgba(29, 185, 84, 0.1);
+    }
+
+    .vehicle-info {
+      flex: 1;
+    }
+
+    .vehicle-name {
+      color: var(--light);
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .vehicle-route {
+      color: rgba(248, 250, 252, 0.6);
+      font-size: 14px;
+    }
+
+    .vehicle-status {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-in-transit {
+      background: rgba(102, 126, 234, 0.2);
+      color: #667eea;
+    }
+
+    .status-delivered {
+      background: rgba(29, 185, 84, 0.2);
+      color: var(--primary);
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 32px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-8px);
+    }
+
+    .feature-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .feature-card h3 {
+      color: var(--light);
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      color: rgba(248, 250, 252, 0.6);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .notification-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .notification-icon {
+      font-size: 24px;
+    }
+
+    .notification-text {
+      color: var(--dark);
+      font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+
+      .page-title {
+        font-size: 36px;
+      }
+
+      #map {
+        height: 350px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+</head>
+
+<body>
+  <!-- Animated Background -->
+  <div class="auth-bg">
+    <div class="gradient-orb orb1"></div>
+    <div class="gradient-orb orb2"></div>
+    <div class="gradient-orb orb3"></div>
+  </div>
+
+  <!-- Header -->
+  <div class="container">
+    <div class="header">
+      <div class="logo"><span class="material-symbols-outlined">yard</span> FoodBridge</div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" onclick="window.location.href='index.html'">Home</button>
+        <button class="btn btn-secondary" onclick="history.back()">Back</button>
+      </div>
+    </div>
+
+    <!-- Page Title -->
+    <h1 class="page-title">Live GPS Tracking</h1>
+    <p class="page-subtitle">Real-time location tracking for food donation pickups</p>
+
+    <!-- Map Section -->
+    <div class="map-section">
+      <div class="map-header">
+        <h3><span class="material-symbols-outlined">location_on</span> Live Map</h3>
+        <p class="map-status live" id="connectionStatus">● Connected</p>
+      </div>
+      <div id="map"></div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Active Deliveries</h3>
+        <p id="activeCount">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>Total Distance</h3>
+        <p id="totalDistance">0 km</p>
+      </div>
+      <div class="stat-card">
+        <h3>Avg Speed</h3>
+        <p id="avgSpeed">0 km/h</p>
+      </div>
+      <div class="stat-card">
+        <h3>Deliveries Today</h3>
+        <p id="deliveriesToday">0</p>
+      </div>
+    </div>
+
+    <!-- Active Vehicles -->
+    <div class="vehicle-list">
+      <h3><span class="material-symbols-outlined">local_shipping</span> Active Vehicles</h3>
+      <div id="vehicleContainer">
+        <p style="color: rgba(248, 250, 252, 0.5); text-align: center; padding: 40px;">
+          No active deliveries at the moment
+        </p>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <div class="vehicle-list">
+      <h3>How It Works</h3>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><span class="material-symbols-outlined">location_on</span></div>
+          <h3>Real-Time Updates</h3>
+          <p>Track pickup vehicles in real-time with GPS coordinates updated every few seconds via Socket.io.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><span class="material-symbols-outlined">map</span>️</div>
+          <h3>Route Visualization</h3>
+          <p>See the complete route from restaurant to delivery location on an interactive map.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⏱️</div>
+          <h3>ETA Calculation</h3>
+          <p>Get estimated time of arrival based on current location and traffic conditions.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification -->
+  <div class="notification" id="notification">
+    <div class="notification-content">
+      <span class="notification-icon"><span class="material-symbols-outlined">notifications</span></span>
+      <span class="notification-text" id="notificationText"></span>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script>
+    const API = '';
+    let map = null;
+    let markers = {};
+    let routes = {};
+    let socket = null;
+
+    // Initialize map
+    function initMap() {
+      map = L.map('map').setView([28.6139, 77.2090], 11);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+    }
+
+    // Connect to Socket.io
+    function connectSocket() {
+      socket = io(API);
+
+      socket.on('connect', () => {
+        console.log('✅ Socket.io connected');
+        document.getElementById('connectionStatus').textContent = '● Connected';
+        document.getElementById('connectionStatus').style.color = 'var(--primary)';
+      });
+
+      socket.on('disconnect', () => {
+        console.log('❌ Socket.io disconnected');
+        document.getElementById('connectionStatus').textContent = '● Disconnected';
+        document.getElementById('connectionStatus').style.color = '#ff6b6c';
+      });
+
+      socket.on('location:update', (data) => {
+        console.log('<span class="material-symbols-outlined">location_on</span> Location update:', data);
+        updateVehicleLocation(data);
+        showNotification(`Vehicle updated: ${data.distanceRemaining.toFixed(1)} km remaining`);
+      });
+    }
+
+    // Load active deliveries
+    async function loadActiveDeliveries() {
+      try {
+        const res = await fetch(`${API}/api/tracking/active`);
+        const deliveries = await res.json();
+
+        document.getElementById('activeCount').textContent = deliveries.length;
+
+        if (deliveries.length > 0) {
+          renderVehicles(deliveries);
+          deliveries.forEach(delivery => {
+            addVehicleToMap(delivery);
+            socket.emit('location:subscribe', delivery._id);
+          });
+        }
+      } catch (err) {
+        console.error('Error loading deliveries:', err);
+      }
+    }
+
+    // Render vehicle list
+    function renderVehicles(deliveries) {
+      const container = document.getElementById('vehicleContainer');
+      container.innerHTML = deliveries.map(d => `
+        <div class="vehicle-item" onclick="focusVehicle('${d._id}')">
+          <div class="vehicle-info">
+            <div class="vehicle-name"><span class="material-symbols-outlined">local_shipping</span> ${d.vehicleId}</div>
+            <div class="vehicle-route">
+              ${d.pickupLocation.name} → ${d.deliveryLocation.name}
+            </div>
+          </div>
+          <div class="vehicle-status status-${d.status.replace('_', '-')}">
+            ${d.status.replace('_', ' ')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Add vehicle marker to map
+    function addVehicleToMap(delivery) {
+      const { _id, currentLocation, pickupLocation, deliveryLocation, vehicleId } = delivery;
+
+      // Pickup marker
+      L.marker([pickupLocation.lat, pickupLocation.lng], {
+        icon: L.divIcon({
+          className: 'custom-icon',
+          html: '<div style="background: #ff6b6c; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;"><span class="material-symbols-outlined">restaurant</span>️</div>',
+          iconSize: [30, 30]
+        })
+      }).bindPopup(pickupLocation.name).addTo(map);
+
+      // Delivery marker
+      L.marker([deliveryLocation.lat, deliveryLocation.lng], {
+        icon: L.divIcon({
+          className: 'custom-icon',
+          html: '<div style="background: #1DB954; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;"><span class="material-symbols-outlined">handshake</span></div>',
+          iconSize: [30, 30]
+        })
+      }).bindPopup(deliveryLocation.name).addTo(map);
+
+      // Vehicle marker
+      markers[_id] = L.marker([currentLocation.lat, currentLocation.lng], {
+        icon: L.divIcon({
+          className: 'custom-icon',
+          html: '<div style="background: #667eea; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);"><span class="material-symbols-outlined">local_shipping</span></div>',
+          iconSize: [35, 35]
+        })
+      }).bindPopup(`${vehicleId} - In Transit`).addTo(map);
+
+      // Route line
+      routes[_id] = L.polyline([
+        [pickupLocation.lat, pickupLocation.lng],
+        [currentLocation.lat, currentLocation.lng],
+        [deliveryLocation.lat, deliveryLocation.lng]
+      ], {
+        color: '#1DB954',
+        weight: 3,
+        opacity: 0.7,
+        dashArray: '10, 10'
+      }).addTo(map);
+    }
+
+    // Update vehicle location
+    function updateVehicleLocation(data) {
+      const { trackingId, location } = data;
+      if (markers[trackingId]) {
+        markers[trackingId].setLatLng([location.lat, location.lng]);
+      }
+    }
+
+    // Focus on vehicle
+    function focusVehicle(id) {
+      if (markers[id]) {
+        map.setView(markers[id].getLatLng(), 13);
+        markers[id].openPopup();
+      }
+    }
+
+    // Show notification
+    function showNotification(text) {
+      const notification = document.getElementById('notification');
+      document.getElementById('notificationText').textContent = text;
+      notification.classList.add('show');
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      initMap();
+      connectSocket();
+      loadActiveDeliveries();
+
+      // Parallax effect
+      document.addEventListener('mousemove', (e) => {
+        const orbs = document.querySelectorAll('.gradient-orb');
+        const mouseX = e.clientX / window.innerWidth;
+        const mouseY = e.clientY / window.innerHeight;
+
+        orbs.forEach((orb, index) => {
+          const speed = (index + 1) * 15;
+          const x = (mouseX - 0.5) * speed;
+          const y = (mouseY - 0.5) * speed;
+          orb.style.transform = `translate(${x}px, ${y}px)`;
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

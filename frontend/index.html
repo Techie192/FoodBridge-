@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FoodBridge — Rescue Surplus Food, Warm Hearts</title>
+  <meta name="description" content="Connect restaurants, homes, and grocery stores with shelters, food banks, and families in need — before good food goes to waste.">
+  <link rel="icon" type="image/png" href="favicon.png?v=4">
+  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ─────────────────── NAVBAR ─────────────────── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <div class="nav-logo"><span class="material-symbols-outlined">eco</span></div>
+        <span class="nav-brand-text">FoodBridge</span>
+      </a>
+
+      <div class="nav-links" id="navLinks">
+        <a href="#how-it-works">How it works</a>
+        <a href="auth.html#listings">Explore</a>
+        <a href="auth.html#impact">Impact</a>
+      </div>
+
+      <button class="nav-cta" onclick="window.location.href='auth.html'">Get Started</button>
+      
+
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─────────────────── HERO ─────────────────── -->
+  <section class="hero">
+    <div class="section-inner">
+      <div class="section-eyebrow reveal"><span class="material-symbols-outlined">public</span> Nourish your community</div>
+
+      <h1 class="hero-title reveal reveal-d1">
+        Rescue surplus food.<br>
+        <em>Warm hearts, end waste.</em>
+      </h1>
+
+      <p class="hero-desc reveal reveal-d2">
+        Connect restaurants, homes, and grocery stores with shelters, food banks, and families in need — before good food goes to waste.
+      </p>
+
+      <div class="hero-actions reveal reveal-d3">
+        <button class="btn btn-primary" onclick="window.location.href='auth.html'">Get Started</button>
+        <button class="btn btn-outline" onclick="window.location.href='auth.html#listings'">Explore Platform</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── STATS ─────────────────── -->
+  <section class="stats-strip">
+    <div class="stats-grid">
+      <div class="stat-card reveal">
+        <span class="stat-number" data-target="12480">0</span>
+        <span class="stat-label">Meals rescued this month</span>
+      </div>
+      <div class="stat-card reveal reveal-d1">
+        <span class="stat-number" data-target="340" data-suffix="+">0</span>
+        <span class="stat-label">Active donors & NGOs</span>
+      </div>
+      <div class="stat-card reveal reveal-d2">
+        <span class="stat-number" data-target="4.2" data-suffix=" T" data-decimal="true">0</span>
+        <span class="stat-label">CO₂ emissions saved</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── MISSION ─────────────────── -->
+  <section class="mission-section section section-center" style="padding-bottom: 60px;">
+    <div class="section-inner">
+      <div class="section-eyebrow reveal"><span class="material-symbols-outlined">yard</span> Our Mission</div>
+      <h2 class="section-title reveal reveal-d1">Bridging the gap between abundance and need</h2>
+      <p class="section-desc section-desc-center reveal reveal-d2" style="max-width: 800px;">
+        Every day, tons of perfectly good food are thrown away while millions go hungry. FoodBridge was created to solve this logistical challenge. We provide a seamless, real-time platform connecting restaurants, bakeries, and households with local NGOs and shelters. By making food rescue effortless, we are building a world with zero hunger and zero waste.
+      </p>
+    </div>
+  </section>
+
+  <!-- ─────────────────── HOW IT WORKS ─────────────────── -->
+  <section class="hiw-section section" id="how-it-works">
+    <div class="section-inner section-center">
+      <div class="section-eyebrow reveal">✦ The Process</div>
+      <h2 class="section-title reveal reveal-d1">How it works</h2>
+      <p class="section-desc section-desc-center reveal reveal-d2">
+        A simple, three-step framework to mobilize surplus food — fast, transparent, and impactful.
+      </p>
+
+      <div class="steps-grid">
+        <div class="step-card reveal">
+          <span class="step-num">01</span>
+          <h3>List surplus</h3>
+          <p>Restaurants, caterers, or households post available food with quantity, type, and pickup window.</p>
+        </div>
+        <div class="step-card reveal reveal-d1">
+          <span class="step-num">02</span>
+          <h3>Match & claim</h3>
+          <p>Nearby NGOs, shelters, and verified recipients browse real-time listings and claim what they need.</p>
+        </div>
+        <div class="step-card reveal reveal-d2">
+          <span class="step-num">03</span>
+          <h3>Pickup & confirm</h3>
+          <p>Donor and recipient coordinate pickup. Both confirm completion to track real, measurable impact.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── IMPACT ─────────────────── -->
+  <section class="impact-section section section-center" id="impact">
+    <div class="section-inner">
+      <div class="section-eyebrow reveal"><span class="material-symbols-outlined">bar_chart</span> Our Metrics</div>
+      <h2 class="section-title reveal reveal-d1">Real impact, real numbers</h2>
+      <p class="section-desc section-desc-center reveal reveal-d2">
+        Every number represents a meal shared, a family helped, a moment of genuine relief.
+      </p>
+
+      <div class="impact-grid">
+        <div class="impact-card reveal">
+          <span class="impact-icon"><span class="material-symbols-outlined">soup_kitchen</span></span>
+          <span class="impact-value" data-target="1240000" data-suffix="+">0</span>
+          <p class="impact-desc">Meals redistributed since launch</p>
+        </div>
+        <div class="impact-card reveal reveal-d1">
+          <span class="impact-icon"><span class="material-symbols-outlined">home</span></span>
+          <span class="impact-value" data-target="890">0</span>
+          <p class="impact-desc">Families receive food support weekly</p>
+        </div>
+        <div class="impact-card reveal reveal-d2" style="grid-column: 1 / -1; padding: 40px; min-height: 300px; display: flex; flex-direction: column;">
+          <h3 style="font-family: var(--font-heading); color: var(--text-dark); margin-bottom: 20px; text-align: left; font-size: 20px;">Monthly Food Rescued (kg)</h3>
+          <div style="flex-grow: 1; position: relative;">
+            <canvas id="impactChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── DONORS ─────────────────── -->
+  <section class="donors-section section section-center">
+    <div class="section-inner">
+      <div class="section-eyebrow reveal"><span class="material-symbols-outlined">handshake</span> Community</div>
+      <h2 class="section-title reveal reveal-d1">Active donors this week</h2>
+      <p class="section-desc section-desc-center reveal reveal-d2">
+        Verified businesses making a real difference by preventing food waste.
+      </p>
+
+      <div class="donors-grid">
+        <div class="donor-card reveal">
+          <div class="donor-avatar">Sh</div>
+          <div class="donor-name">Shree Bhavan</div>
+          <div class="donor-type">Restaurant</div>
+          <div class="donor-stat">340 meals</div>
+        </div>
+        <div class="donor-card reveal reveal-d1">
+          <div class="donor-avatar">Su</div>
+          <div class="donor-name">Sunrise Bakery</div>
+          <div class="donor-type">Bakery</div>
+          <div class="donor-stat">180 units</div>
+        </div>
+        <div class="donor-card reveal reveal-d2">
+          <div class="donor-avatar">Me</div>
+          <div class="donor-name">Metro Supermart</div>
+          <div class="donor-type">Grocery</div>
+          <div class="donor-stat">90 kg</div>
+        </div>
+        <div class="donor-card reveal reveal-d3">
+          <div class="donor-avatar">Gr</div>
+          <div class="donor-name">Green Bistro</div>
+          <div class="donor-type">Restaurant</div>
+          <div class="donor-stat">220 meals</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ─────────────────── FINAL CTA ─────────────────── -->
+  <section class="cta-section section section-center">
+    <div class="section-inner">
+      <h2 class="section-title reveal">Ready to make a difference?</h2>
+      <p class="section-desc section-desc-center reveal reveal-d1">Join our growing community of food heroes today.</p>
+      <div class="hero-actions reveal reveal-d2" style="justify-content: center; margin-top: 30px;">
+        <button class="btn btn-primary" onclick="window.location.href='auth.html'">Join FoodBridge</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────── FOOTER ─────────────────── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">
+            <div class="nav-logo"><span class="material-symbols-outlined">eco</span></div>
+            <span class="footer-brand-text">FoodBridge</span>
+          </div>
+          <p class="footer-desc">Connecting surplus food with communities in need. Reducing waste. Building a sustainable future — together.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="#how-it-works">How it Works</a></li>
+            <li><a href="#listings">Listings</a></li>
+            <li><a href="#impact">Our Impact</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Join Us</h4>
+          <ul class="footer-links">
+            <li><a href="auth.html?role=restaurant">As Restaurant</a></li>
+            <li><a href="auth.html?role=ngo">As NGO / Shelter</a></li>
+            <li><a href="auth.html?role=compost">As Compost</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul class="footer-links">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Partner with Us</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 FoodBridge. All rights reserved.</p>
+        <div class="footer-badge"><span class="material-symbols-outlined">yard</span> Built for communities</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ─────────────────── SCRIPTS ─────────────────── -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    /* ── Mobile nav toggle ── */
+    document.getElementById('navToggle').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('open');
+    });
+
+    /* ── Scroll reveal ── */
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          // Trigger counter animations for stat numbers
+          e.target.querySelectorAll('[data-target]').forEach(el => {
+            if (!el.classList.contains('counted')) animateCounter(el);
+          });
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+    /* ── Counter animation ── */
+    function animateCounter(el) {
+      el.classList.add('counted');
+      const end     = parseFloat(el.dataset.target);
+      const suffix  = el.dataset.suffix || '';
+      const decimal = el.dataset.decimal === 'true';
+      const dur     = 1800;
+      let start     = null;
+
+      function step(ts) {
+        if (!start) start = ts;
+        const p    = Math.min((ts - start) / dur, 1);
+        const ease = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p;
+        const cur  = ease * end;
+        el.textContent = (decimal ? cur.toFixed(1) : Math.floor(cur).toLocaleString()) + suffix;
+        if (p < 1) requestAnimationFrame(step);
+        else el.textContent = (decimal ? end.toFixed(1) : end.toLocaleString()) + suffix;
+      }
+      requestAnimationFrame(step);
+    }
+
+    /* ── Chart.js Initialization ── */
+    document.addEventListener("DOMContentLoaded", () => {
+      const ctx = document.getElementById('impactChart');
+      if (ctx) {
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+              label: 'Food Rescued (kg)',
+              data: [850, 1200, 2100, 2900, 3500, 4800],
+              borderColor: '#a9c46c',
+              backgroundColor: 'rgba(169, 196, 108, 0.12)',
+              borderWidth: 2.5,
+              pointBackgroundColor: '#a9c46c',
+              pointBorderColor: '#080f09',
+              pointBorderWidth: 2,
+              pointRadius: 5,
+              fill: true,
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(169,196,108,0.08)' },
+                ticks: { color: '#7a9e7e', font: { family: 'Poppins' } }
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: '#7a9e7e', font: { family: 'Poppins' } }
+              }
+            }
+          }
+        });
+      }
+    });
+
+
+  </script>
+
+</body>
+</html>

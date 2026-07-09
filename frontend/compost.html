@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compost Facility | FoodBridge</title>
+  <link rel="icon" type="image/png" href="favicon.png?v=4">
+  <link rel="stylesheet" href="style.css?v=2">
+
+  <style>
+    .dashboard {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+    }
+
+    .page-header {
+      background: var(--green-dark);
+      color: var(--text-white);
+      border-radius: var(--radius-lg);
+      padding: 40px 44px;
+      margin-bottom: 36px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: -30%; right: -10%;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(169,196,108,0.12), transparent 65%);
+    }
+
+    .page-badge { font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--green-sage); margin-bottom: 10px; }
+    .page-header h1 { font-family: var(--font-heading); font-size: clamp(26px,4vw,38px); color: var(--text-white); margin-bottom: 6px; position: relative; }
+    .page-header p { color: var(--text-white-sec); font-size: 15px; position: relative; }
+
+    /* Stats */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 18px;
+      margin-bottom: 36px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: inset 0 0 0 1px var(--border-light), var(--shadow-sm);
+      transition: var(--transition);
+      transform: translateZ(0); /* Fixes webkit border rendering */
+    }
+
+    .stat-card:hover { border-color: var(--green-sage); transform: translateY(-4px) translateZ(0); box-shadow: inset 0 0 0 1px var(--green-sage), var(--shadow-lg); }
+
+    .stat-icon { font-size: 38px; margin-bottom: 12px; display: block; }
+    .stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; }
+    .stat-value { font-family: var(--font-heading); font-size: 34px; color: var(--text-white); font-weight: 700; }
+
+    /* Content Card */
+    .content-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .content-title {
+      font-family: var(--font-heading);
+      font-size: 26px;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+
+    .content-desc {
+      color: var(--text-body);
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    /* Waste Grid */
+    .waste-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .waste-card {
+      background: var(--bg);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      transition: var(--transition);
+    }
+
+    .waste-card:hover {
+      border-color: var(--green-sage);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .waste-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+    .waste-icon { font-size: 32px; }
+    .waste-badge {
+      background: #e6f6ec; color: #1a8b3f; border: 1px solid #c1e8cd;
+      padding: 4px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    }
+
+    .waste-title { font-family: var(--font-heading); font-size: 18px; color: var(--text-dark); margin-bottom: 10px; }
+    .waste-detail { color: var(--text-body); font-size: 13px; margin-bottom: 5px; }
+    .waste-detail strong { color: var(--text-dark); }
+
+    .collect-btn {
+      width: 100%; margin-top: 18px; padding: 12px;
+      background: var(--green-dark); color: #fff; border: none;
+      border-radius: var(--radius-md); font-family: var(--font-body);
+      font-weight: 700; font-size: 14px; cursor: pointer; transition: var(--transition);
+    }
+
+    .collect-btn:hover { background: var(--green-deep); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(31,77,46,0.20); }
+
+    /* Modal */
+    .modal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(36,50,31,0.50); backdrop-filter: blur(8px);
+      z-index: 1000; align-items: center; justify-content: center;
+    }
+    .modal.show { display: flex; }
+
+    .modal-box {
+      background: var(--bg-card); border: 1px solid var(--border-light);
+      border-radius: var(--radius-xl); padding: 44px; max-width: 400px; width: 90%;
+      text-align: center; box-shadow: var(--shadow-xl);
+      animation: pop 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    @keyframes pop { from { opacity:0; transform:scale(0.88); } to { opacity:1; transform:scale(1); } }
+
+    .modal-emoji { font-size: 56px; margin-bottom: 14px; }
+    .modal-text { color: var(--text-body); font-size: 15px; margin-bottom: 24px; line-height: 1.6; }
+
+    @media (max-width: 768px) {
+      .stats-row, .waste-grid { grid-template-columns: 1fr; }
+      .content-card { padding: 28px; }
+    }
+  </style>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Header -->
+  <nav class="dashboard-header">
+    <div class="nav-inner">
+      <a class="nav-brand" href="index.html">
+        <div class="nav-logo"><span class="material-symbols-outlined">eco</span></div>
+        <span class="nav-brand-text">FoodBridge</span>
+      </a>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button class="btn btn-outline btn-sm" onclick="window.location.href='index.html'">Home</button>
+        <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard">
+
+    <div class="page-header">
+      <div class="page-badge">♻️ Compost Facility</div>
+      <h1>Transform Organic Waste</h1>
+      <p>Collect and convert non-edible food waste into sustainable compost</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <span class="stat-icon">♻️</span>
+        <div class="stat-label">Total Collections</div>
+        <div class="stat-value">142</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><span class="material-symbols-outlined">inventory_2</span></span>
+        <div class="stat-label">Waste Collected (kg)</div>
+        <div class="stat-value">3,287</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><span class="material-symbols-outlined">yard</span></span>
+        <div class="stat-label">Compost Produced (kg)</div>
+        <div class="stat-value">2,460</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><span class="material-symbols-outlined">public</span></span>
+        <div class="stat-label">CO₂ Prevented (kg)</div>
+        <div class="stat-value">6,574</div>
+      </div>
+    </div>
+
+    <!-- Available Collections -->
+    <div class="content-card">
+      <h2 class="content-title">Available Waste Collections</h2>
+      <p class="content-desc">Collect non-edible organic waste from restaurants and convert it into nutrient-rich compost.</p>
+
+      <div class="waste-grid">
+        <div class="waste-card">
+          <div class="waste-header">
+            <span class="waste-icon"><span class="material-symbols-outlined">spa</span></span>
+            <span class="waste-badge">Available</span>
+          </div>
+          <div class="waste-title">Vegetable Scraps</div>
+          <div class="waste-detail"><strong>Restaurant:</strong> Green Bistro</div>
+          <div class="waste-detail"><strong>Quantity:</strong> 45 kg</div>
+          <div class="waste-detail"><strong>Location:</strong> Downtown Area</div>
+          <div class="waste-detail"><strong>Type:</strong> Food waste, peels</div>
+          <button class="collect-btn" onclick="scheduleCollection('Vegetable Scraps')">♻️ Schedule Collection</button>
+        </div>
+
+        <div class="waste-card">
+          <div class="waste-header">
+            <span class="waste-icon"><span class="material-symbols-outlined">energy_savings_leaf</span></span>
+            <span class="waste-badge">Available</span>
+          </div>
+          <div class="waste-title">Organic Waste Mix</div>
+          <div class="waste-detail"><strong>Restaurant:</strong> Pasta Palace</div>
+          <div class="waste-detail"><strong>Quantity:</strong> 32 kg</div>
+          <div class="waste-detail"><strong>Location:</strong> North District</div>
+          <div class="waste-detail"><strong>Type:</strong> Mixed organic</div>
+          <button class="collect-btn" onclick="scheduleCollection('Organic Waste Mix')">♻️ Schedule Collection</button>
+        </div>
+
+        <div class="waste-card">
+          <div class="waste-header">
+            <span class="waste-icon">☕</span>
+            <span class="waste-badge">Available</span>
+          </div>
+          <div class="waste-title">Coffee Grounds & Filters</div>
+          <div class="waste-detail"><strong>Restaurant:</strong> Café Culture</div>
+          <div class="waste-detail"><strong>Quantity:</strong> 28 kg</div>
+          <div class="waste-detail"><strong>Location:</strong> West End</div>
+          <div class="waste-detail"><strong>Type:</strong> Coffee waste</div>
+          <button class="collect-btn" onclick="scheduleCollection('Coffee Grounds')">♻️ Schedule Collection</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Environmental Impact -->
+    <div class="content-card">
+      <h2 class="content-title">Environmental Impact</h2>
+      <p class="content-desc">Your composting efforts are making a real difference — preventing methane emissions and creating valuable soil amendments.</p>
+
+      <div class="stats-row" style="margin-bottom: 0;">
+        <div class="stat-card">
+          <span class="stat-icon"><span class="material-symbols-outlined">park</span></span>
+          <div class="stat-label">Trees Equivalent</div>
+          <div class="stat-value">87</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon"><span class="material-symbols-outlined">water_drop</span></span>
+          <div class="stat-label">Water Saved (L)</div>
+          <div class="stat-value">12,450</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon"><span class="material-symbols-outlined">eco</span></span>
+          <div class="stat-label">Soil Enriched (m³)</div>
+          <div class="stat-value">246</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-box">
+      <span class="icon"><span class="material-symbols-outlined" style="font-size:48px;color:var(--green-sage);">check_circle</span></span>
+      <h3 style="color:var(--text-dark); font-family:var(--font-heading); margin:12px 0 8px;">Success!</h3>
+      <p id="modalMsg" class="modal-text"></p>
+      <button class="btn btn-primary btn-sm" onclick="closeModal()">Done!</button>
+    </div>
+  </div>
+  <script>
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+    function scheduleCollection(name) {
+      document.getElementById('modalMsg').textContent = `Collection scheduled for "${name}"! Our team will contact you shortly.`;
+      document.getElementById('modal').classList.add('show');
+    }
+
+    function closeModal() { document.getElementById('modal').classList.remove('show'); }
+
+    document.getElementById('modal').addEventListener('click', (e) => {
+      if (e.target.id === 'modal') closeModal();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FoodBridge | Choose Your Role</title>
+  <style>
+    /* ============================================
+       RESET & ROOT
+       ============================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #1DB954;
+      --primary-dark: #0E8E3E;
+      --dark: #0A0E27;
+      --dark-2: #0F1535;
+      --light: #F8FAFC;
+      --accent: #FFB800;
+      --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-2: linear-gradient(135deg, #1DB954 0%, #0E8E3E 100%);
+      --gradient-3: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.3);
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--dark);
+      color: var(--light);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ============================================
+       ANIMATED BACKGROUND ORBS
+       ============================================ */
+    .auth-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .gradient-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.35;
+      animation: float 12s ease-in-out infinite;
+    }
+
+    .orb1 {
+      width: 480px;
+      height: 480px;
+      background: var(--gradient-1);
+      top: -12%;
+      right: -8%;
+    }
+
+    .orb2 {
+      width: 380px;
+      height: 380px;
+      background: var(--gradient-2);
+      bottom: -8%;
+      left: -6%;
+      animation-delay: 2s;
+    }
+
+    .orb3 {
+      width: 300px;
+      height: 300px;
+      background: var(--gradient-3);
+      top: 50%;
+      left: 55%;
+      animation-delay: 4s;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      33% {
+        transform: translate(25px, -25px) scale(1.08);
+      }
+
+      66% {
+        transform: translate(-18px, 18px) scale(0.93);
+      }
+    }
+
+    /* ============================================
+       PAGE WRAPPER  —  centres everything
+       ============================================ */
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    /* ============================================
+       HEADER LOGO (top of page)
+       ============================================ */
+    .logo-header {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .logo-text {
+      font-size: 34px;
+      font-weight: 700;
+      background: var(--gradient-2);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-sub {
+      color: rgba(248, 250, 252, 0.55);
+      font-size: 16px;
+      margin-top: 6px;
+    }
+
+    /* ============================================
+       ROLE SELECTION SECTION
+       ============================================ */
+    .role-section {
+      width: 100%;
+      max-width: 780px;
+      margin-bottom: 36px;
+    }
+
+    .role-section h2 {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .role-section>p {
+      text-align: center;
+      color: rgba(248, 250, 252, 0.55);
+      font-size: 15px;
+      margin-bottom: 28px;
+    }
+
+    /* grid of 4 role cards */
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 18px;
+    }
+
+    .role-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(14px);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 32px 18px 28px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* coloured glow layer behind content */
+    .role-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: 0;
+    }
+
+    .role-card.restaurant::before {
+      background: var(--gradient-2);
+    }
+
+    .role-card.ngo::before {
+      background: var(--gradient-1);
+    }
+
+    .role-card.compost::before {
+      background: linear-gradient(135deg, #FFB800, #FF8C00);
+    }
+
+    .role-card.admin::before {
+      background: var(--gradient-3);
+    }
+
+    .role-card:hover::before {
+      opacity: 0.13;
+    }
+
+    .role-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--primary);
+      box-shadow: 0 18px 50px rgba(29, 185, 84, 0.25);
+    }
+
+    /* keep text above the ::before layer */
+    .role-card>* {
+      position: relative;
+      z-index: 1;
+    }
+
+    .role-card .role-icon {
+      font-size: 42px;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .role-card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--light);
+      margin-bottom: 8px;
+    }
+
+    .role-card p {
+      color: rgba(248, 250, 252, 0.6);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* ============================================
+       AUTH CARD  —  login / signup
+       ============================================ */
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(22px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 44px 38px 40px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* ── tab toggle ── */
+    .auth-toggle {
+      display: flex;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+
+    .auth-toggle button {
+      flex: 1;
+      padding: 12px;
+      background: transparent;
+      border: none;
+      color: rgba(248, 250, 252, 0.6);
+      font-weight: 600;
+      font-size: 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .auth-toggle button.active {
+      background: var(--gradient-2);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(29, 185, 84, 0.35);
+    }
+
+    /* ── forms (hidden / shown) ── */
+    .auth-form {
+      display: none;
+    }
+
+    .auth-form.active {
+      display: block;
+      animation: fadeIn 0.35s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      color: var(--light);
+      font-weight: 500;
+      font-size: 14px;
+      margin-bottom: 7px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 13px 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      color: var(--light);
+      font-size: 15px;
+      font-family: inherit;
+      transition: var(--transition);
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.12);
+    }
+
+    input::placeholder {
+      color: rgba(248, 250, 252, 0.3);
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    select option {
+      background: var(--dark);
+      color: var(--light);
+    }
+
+    /* GST field — hidden by default, shown for restaurant role */
+    #gstGroup {
+      display: none;
+    }
+
+    #gstGroup.visible {
+      display: block;
+    }
+
+    .gst-hint {
+      color: rgba(248, 250, 252, 0.4);
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    /* ── submit button ── */
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background: var(--gradient-2);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 8px;
+      box-shadow: 0 8px 28px rgba(29, 185, 84, 0.3);
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 36px rgba(29, 185, 84, 0.4);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    /* ── back link ── */
+    .back-home {
+      text-align: center;
+      margin-top: 26px;
+    }
+
+    .back-home a {
+      color: rgba(248, 250, 252, 0.55);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+
+    .back-home a:hover {
+      color: var(--primary);
+    }
+
+    /* ============================================
+       MODAL
+       ============================================ */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 42px 36px;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: var(--shadow-lg);
+      animation: modalPop 0.28s ease;
+    }
+
+    @keyframes modalPop {
+      from {
+        opacity: 0;
+        transform: scale(0.88);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .modal-content .modal-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .modal-content p {
+      color: var(--dark);
+      font-size: 17px;
+      margin-bottom: 20px;
+    }
+
+    .modal-content button {
+      padding: 12px 32px;
+      background: var(--gradient-2);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .modal-content button:hover {
+      transform: scale(1.05);
+    }
+
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 600px) {
+      .role-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .role-card {
+        padding: 24px 12px 22px;
+      }
+
+      .role-card .role-icon {
+        font-size: 34px;
+      }
+
+      .role-card h3 {
+        font-size: 15px;
+      }
+
+      .auth-card {
+        padding: 36px 26px 32px;
+      }
+
+      .logo-text {
+        font-size: 28px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .role-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+</head>
+
+<body>
+
+  <!-- ── animated background ── -->
+  <div class="auth-bg">
+    <div class="gradient-orb orb1"></div>
+    <div class="gradient-orb orb2"></div>
+    <div class="gradient-orb orb3"></div>
+  </div>
+
+  <!-- ── main page layout ── -->
+  <div class="page-wrapper">
+
+    <!-- logo -->
+    <div class="logo-header">
+      <div class="logo-text"><span class="material-symbols-outlined">yard</span> FoodBridge</div>
+      <p class="logo-sub">Transforming food waste into hope</p>
+    </div>
+
+    <!-- ── ROLE SELECTION CARDS ── -->
+    <div class="role-section">
+      <h2>Who are you?</h2>
+      <p>Pick your role — it will pre-fill your signup form below</p>
+
+      <div class="role-grid">
+        <div class="role-card restaurant" onclick="selectRole('restaurant')">
+          <span class="role-icon"><span class="material-symbols-outlined">restaurant</span>️</span>
+          <h3>Restaurant</h3>
+          <p>Donate your surplus food and reduce waste</p>
+        </div>
+
+        <div class="role-card ngo" onclick="selectRole('ngo')">
+          <span class="role-icon"><span class="material-symbols-outlined">handshake</span></span>
+          <h3>NGO</h3>
+          <p>Claim edible donations for your community</p>
+        </div>
+
+        <div class="role-card compost" onclick="selectRole('compost')">
+          <span class="role-icon">♻️</span>
+          <h3>Compost</h3>
+          <p>Collect non-edible waste for composting</p>
+        </div>
+
+        <div class="role-card admin" onclick="selectRole('admin')">
+          <span class="role-icon"><span class="material-symbols-outlined">admin_panel_settings</span></span>
+          <h3>Admin</h3>
+          <p>Manage the entire FoodBridge platform</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── AUTH CARD ── -->
+    <div class="auth-card">
+
+      <!-- tab toggle -->
+      <div class="auth-toggle">
+        <button id="loginTab" class="active">Sign In</button>
+        <button id="signupTab">Sign Up</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="loginForm" class="auth-form active">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="loginEmail" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password" required>
+        </div>
+        <button type="submit" class="submit-btn">Sign In</button>
+      </form>
+
+      <!-- SIGNUP FORM -->
+      <form id="signupForm" class="auth-form">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="signupName" placeholder="John Doe" required>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="signupEmail" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="signupPassword" placeholder="Create a password" required>
+        </div>
+        <div class="form-group" style="display: none;">
+          <label>I am a…</label>
+          <select id="signupRole">
+            <option value="">Select your role</option>
+            <option value="restaurant"><span class="material-symbols-outlined">restaurant</span>️ Restaurant</option>
+            <option value="ngo"><span class="material-symbols-outlined">handshake</span> NGO / Charity</option>
+            <option value="compost">♻️ Compost Facility</option>
+            <option value="admin"><span class="material-symbols-outlined">admin_panel_settings</span> Admin</option>
+          </select>
+        </div>
+
+        <!-- GST field — only visible when "restaurant" is selected -->
+        <div class="form-group" id="gstGroup">
+          <label>GST Number</label>
+          <input type="text" id="signupGST" placeholder="e.g. 12ABCDE3456F1Z5" maxlength="15">
+          <p class="gst-hint">15-character alphanumeric GST ID (required for restaurants)</p>
+        </div>
+
+        <button type="submit" class="submit-btn">Create Account</button>
+      </form>
+
+      <!-- back link -->
+      <div class="back-home">
+        <a href="index.html">← Back to Home</a>
+      </div>
+    </div>
+  </div>  <!-- ── MODAL ── -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="modal-icon" id="modalIcon"><span class="material-symbols-outlined" style="font-size:48px;color:var(--green-sage);">info</span></span>
+      <p id="modalMessage"></p>
+      <button onclick="closeModal()">OK</button>
+    </div>
+  </div>
+  <!-- ============================================
+       JAVASCRIPT
+       ============================================ -->
+  <script>
+    (function () {
+      /* ── config ── */
+      const API = '';
+
+      /* ── DOM refs ── */
+      const loginTab = document.getElementById('loginTab');
+      const signupTab = document.getElementById('signupTab');
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      const roleSelect = document.getElementById('signupRole');
+      const gstGroup = document.getElementById('gstGroup');
+
+      /* ============================================================
+         MODAL helpers
+         ============================================================ */
+      function showModal(message, icon = 'info') {
+        document.getElementById('modalMessage').textContent = message;
+        document.getElementById('modalIcon').innerHTML = `<span class="material-symbols-outlined" style="font-size:48px;color:var(--green-sage);">${icon}</span>`;
+        document.getElementById('modal').classList.add('show');
+      }
+      window.closeModal = function () {
+        document.getElementById('modal').classList.remove('show');
+      };
+
+      /* ============================================================
+         TAB SWITCHING
+         ============================================================ */
+      loginTab.addEventListener('click', () => {
+        loginTab.classList.add('active');
+        signupTab.classList.remove('active');
+        loginForm.classList.add('active');
+        signupForm.classList.remove('active');
+      });
+
+      signupTab.addEventListener('click', () => {
+        signupTab.classList.add('active');
+        loginTab.classList.remove('active');
+        signupForm.classList.add('active');
+        loginForm.classList.remove('active');
+      });
+
+      /* ============================================================
+         ROLE CARD → pre-fill signup
+         ============================================================ */
+      window.selectRole = function (role) {
+        // highlight the chosen card
+        document.querySelectorAll('.role-card').forEach(c => c.style.border = '2px solid rgba(255,255,255,0.1)');
+        const chosen = document.querySelector(`.role-card.${role}`);
+        if (chosen) chosen.style.border = '2px solid var(--primary)';
+
+        // switch to signup tab & set value
+        signupTab.click();
+        roleSelect.value = role;
+        toggleGST();                          // show / hide GST
+      };
+
+      /* ============================================================
+         GST field visibility  —  toggle on role change
+         ============================================================ */
+      function toggleGST() {
+        gstGroup.classList.toggle('visible', roleSelect.value === 'restaurant');
+      }
+      roleSelect.addEventListener('change', toggleGST);
+
+      /* ============================================================
+         ON LOAD  —  honour ?role= URL param or stored value
+         ============================================================ */
+      document.addEventListener('DOMContentLoaded', () => {
+        // 1. URL param  ?role=restaurant
+        const params = new URLSearchParams(window.location.search);
+        const paramRole = params.get('role');
+
+        // 2. localStorage (set by a previous page)
+        const storedRole = localStorage.getItem('selectedRole');
+        localStorage.removeItem('selectedRole');
+
+        const role = paramRole || storedRole;
+        if (role && ['restaurant', 'ngo', 'compost', 'admin'].includes(role)) {
+          window.selectRole(role);
+        }
+      });
+
+      /* ============================================================
+         LOGIN
+         ============================================================ */
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+
+        try {
+          const res = await fetch(`${API}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await res.json();
+
+          if (!res.ok) { showModal(data.message || 'Login failed', 'cancel'); return; }
+
+          /* persist session */
+          localStorage.setItem('userToken', data.token);
+          localStorage.setItem('userRole', data.role);
+          localStorage.setItem('userName', data.name || email.split('@')[0]);
+
+          showModal('Login successful! Redirecting…', 'check_circle');
+
+          setTimeout(() => {
+            const map = { restaurant: 'restaurant.html', ngo: 'ngo.html', compost: 'compost.html', admin: 'admin.html' };
+            window.location.href = map[data.role] || 'dashboard.html';
+          }, 1100);
+
+        } catch (err) {
+          console.error(err);
+          showModal('Server error. Is the backend running on port 5001?', 'warning');
+        }
+      });
+
+      /* ============================================================
+         SIGNUP
+         ============================================================ */
+      signupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('signupName').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const password = document.getElementById('signupPassword').value;
+        const role = roleSelect.value;
+        const gst = document.getElementById('signupGST').value.trim();
+
+        if (!role) { showModal('Please select a role from the cards above.', 'warning'); return; }
+
+        /* GST validation for restaurants */
+        if (role === 'restaurant') {
+          if (!gst) { showModal('GST number is required for restaurants.', 'warning'); return; }
+          if (!/^[0-9A-Za-z]{15}$/.test(gst)) { showModal('GST must be exactly 15 alphanumeric characters.', 'warning'); return; }
+        }
+
+        try {
+          const body = { name, email, password, role };
+          if (gst) body.gst = gst.toUpperCase();
+
+          const res = await fetch(`${API}/api/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+          const data = await res.json();
+
+          if (!res.ok) { showModal(data.message || 'Registration failed', 'cancel'); return; }
+          showModal('Account created! Please sign in.', 'celebration');
+
+          setTimeout(() => {
+            signupForm.reset();
+            gstGroup.classList.remove('visible');
+            document.querySelectorAll('.role-card').forEach(c => c.style.border = '2px solid rgba(255,255,255,0.1)');
+            loginTab.click();
+          }, 1600);
+
+        } catch (err) {
+          console.error(err);
+          showModal('Server error. Please try again later.', 'warning');
+        }
+      });
+
+      /* ============================================================
+         PARALLAX MOUSE EFFECT on orbs
+         ============================================================ */
+      document.addEventListener('mousemove', (e) => {
+        const orbs = document.querySelectorAll('.gradient-orb');
+        const mx = e.clientX / window.innerWidth;
+        const my = e.clientY / window.innerHeight;
+        orbs.forEach((orb, i) => {
+          const s = (i + 1) * 18;
+          orb.style.transform = `translate(${(mx - 0.5) * s}px, ${(my - 0.5) * s}px)`;
+        });
+      });
+
+    })(); // end IIFE
+  </script>
+</body>
+
+</html>

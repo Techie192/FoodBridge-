@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | FoodBridge</title>
+  <link rel="icon" type="image/png" href="favicon.png?v=4">
+  <link rel="stylesheet" href="style.css?v=3">
+  <style>
+    .dashboard {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+    }
+
+    .page-header {
+      background: var(--green-dark);
+      color: var(--text-white);
+      border-radius: var(--radius-lg);
+      padding: 40px 44px;
+      margin-bottom: 36px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      right: -10%;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(169, 196, 108, 0.12), transparent 65%);
+    }
+
+    .page-badge {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--green-sage);
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .tabs-container {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 12px 24px;
+      background: transparent;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-full);
+      color: var(--text-body);
+      font-weight: 600;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .tab.active {
+      background: var(--green-dark);
+      color: var(--text-white);
+      border-color: var(--green-dark);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .admin-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .admin-stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      text-align: center;
+      box-shadow: var(--shadow-xs);
+      transition: var(--transition);
+      position: relative;
+      z-index: 1;
+    }
+
+    .admin-stat-card:hover {
+      border-color: var(--green-sage);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-sm);
+      z-index: 2;
+    }
+
+    .stat-icon {
+      font-size: 42px;
+      margin-bottom: 12px;
+      display: block;
+      opacity: 0.9;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 13.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--green-sage);
+      font-family: var(--font-heading);
+    }
+
+    .content-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-xs);
+      margin-bottom: 32px;
+    }
+
+    .content-card h2 {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      margin-bottom: 8px;
+      color: var(--text-dark);
+    }
+
+    .content-card p {
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      font-size: 15px;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .filter-bar input {
+      flex: 1;
+      padding: 14px 20px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      font-family: var(--font-body);
+      outline: none;
+      background: var(--bg-card);
+      transition: var(--transition);
+    }
+
+    .filter-bar input:focus {
+      border-color: var(--green-sage);
+      box-shadow: 0 0 0 3px rgba(169, 196, 108, 0.2);
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14.5px;
+    }
+
+    th,
+    td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    th {
+      color: var(--text-dark);
+      font-weight: 600;
+      font-size: 13.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    td {
+      color: var(--text-body);
+    }
+
+    tr:hover {
+      background: rgba(0, 0, 0, 0.015);
+    }
+
+    .status-badge {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-available {
+      background: var(--green-pale);
+      color: var(--green-dark);
+      border: 1px solid var(--border-sage);
+    }
+
+    .status-claimed {
+      background: rgba(255, 184, 0, 0.15);
+      color: #b47a00;
+      border: 1px solid rgba(255, 184, 0, 0.3);
+    }
+
+    .status-collected {
+      background: var(--bg);
+      color: var(--text-muted);
+      border: 1px solid var(--border-light);
+    }
+
+    .role-badge {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .role-restaurant {
+      background: var(--green-pale);
+      color: var(--green-dark);
+      border: 1px solid var(--border-sage);
+    }
+
+    .role-ngo {
+      background: #e0e7ff;
+      color: #4338ca;
+      border: 1px solid #c7d2fe;
+    }
+
+    .role-compost {
+      background: #fef08a;
+      color: #854d0e;
+      border: 1px solid #fde047;
+    }
+
+    .role-admin {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(36, 50, 31, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .modal-content h3 {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      color: var(--text-dark);
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 12px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--border-light);
+    }
+
+    .detail-label {
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 14.5px;
+    }
+
+    .detail-value {
+      color: var(--text-dark);
+      font-weight: 600;
+      text-align: right;
+      font-size: 14.5px;
+    }
+
+    .modal-close-btn {
+      margin-top: 24px;
+      width: 100%;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      background: var(--green-dark);
+      color: white;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .modal-close-btn:hover {
+      background: #163820;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+      font-size: 16px;
+      background: var(--bg);
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--border-light);
+    }
+
+    .loading-spinner {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+
+    .filter-bar input { color: var(--text-dark); }
+  </style>
+      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+</head>
+<body>
+  <!-- Dashboard Header -->
+  <nav class="dashboard-header">
+    <div class="nav-inner">
+      <a class="nav-brand" href="index.html">
+        <div class="nav-logo"><span class="material-symbols-outlined">eco</span></div>
+        <span class="nav-brand-text">FoodBridge</span>
+      </a>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button class="btn btn-outline btn-sm" onclick="window.location.href='index.html'">Home</button>
+        <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard">
+    <!-- Page Title -->
+    <div class="page-header">
+      <div class="page-badge"><span class="material-symbols-outlined">admin_panel_settings</span> Admin Console</div>
+      <h1 style="font-family:var(--font-heading); font-size:36px; margin-bottom:8px; color:#ffffff;">Platform Control Center</h1>
+      <p style="color:rgba(255,255,255,0.85); font-size:15px; position:relative;">Monitor and manage the FoodBridge platform in real-time</p>
+    </div>
+
+    <!-- Tabs Container -->
+    <div class="tabs-container">
+      <button class="tab active" onclick="switchTab('dashboard')"><span class="material-symbols-outlined">bar_chart</span> Dashboard</button>
+      <button class="tab" onclick="switchTab('donations')"><span class="material-symbols-outlined">bento</span> Donations</button>
+      <button class="tab" onclick="switchTab('users')"><span class="material-symbols-outlined">group</span> Users</button>
+    </div>
+
+    <!-- DASHBOARD TAB -->
+    <div id="dashboard-tab" class="tab-content active">
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card"><span class="stat-icon"><span class="material-symbols-outlined">group</span></span><div class="stat-label">Total Users</div><div class="stat-value" id="totalUsers">0</div></div>
+        <div class="admin-stat-card"><span class="stat-icon"><span class="material-symbols-outlined">inventory_2</span></span><div class="stat-label">Total Donations</div><div class="stat-value" id="totalDonations">0</div></div>
+        <div class="admin-stat-card"><span class="stat-icon"><span class="material-symbols-outlined">scale</span></span><div class="stat-label">Food Rescued (kg)</div><div class="stat-value" id="totalKg">0.0</div></div>
+        <div class="admin-stat-card"><span class="stat-icon"><span class="material-symbols-outlined">local_fire_department</span></span><div class="stat-label">Active Donations</div><div class="stat-value" id="activeDonations">0</div></div>
+        <div class="admin-stat-card"><span class="stat-icon"><span class="material-symbols-outlined">restaurant</span></span><div class="stat-label">Restaurants</div><div class="stat-value" id="totalRestaurants">0</div></div>
+        <div class="admin-stat-card"><span class="stat-icon"><span class="material-symbols-outlined">handshake</span></span><div class="stat-label">NGO / Charities</div><div class="stat-value" id="totalNGOs">0</div></div>
+        <div class="admin-stat-card"><span class="stat-icon"><span class="material-symbols-outlined">recycling</span></span><div class="stat-label">Compost Facilities</div><div class="stat-value" id="totalCompost">0</div></div>
+        <div class="admin-stat-card"><span class="stat-icon"><span class="material-symbols-outlined">public</span></span><div class="stat-label">CO₂ Saved (kg)</div><div class="stat-value" id="co2Saved">0.0</div></div>
+      </div>
+    </div>
+
+    <!-- DONATIONS TAB -->
+    <div id="donations-tab" class="tab-content">
+      <div class="content-card">
+        <h2><span class="material-symbols-outlined">bento</span> Donation Monitoring</h2>
+        <p>View, inspect, or remove listings from the platform.</p>
+        <div class="filter-bar"><input type="text" id="donationsSearch" placeholder="Search donations by restaurant, food name, or status..." onkeyup="filterDonations()"></div>
+        <div id="donationsLoading" class="loading-spinner"><span class="material-symbols-outlined">sensors</span> Loading donations data...</div>
+        <div id="donationsEmpty" class="empty-state" style="display: none;"><span class="material-symbols-outlined">info</span> No donations found on the platform.</div>
+        <div class="table-container" id="donationsTable" style="display: none;">
+          <table>
+            <thead><tr><th>ID</th><th>Restaurant</th><th>Food Name</th><th>Quantity (kg)</th><th>Condition</th><th>Location</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="donationsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- USERS TAB -->
+    <div id="users-tab" class="tab-content">
+      <div class="content-card">
+        <h2><span class="material-symbols-outlined">group</span> User Accounts</h2>
+        <p>Monitor registered accounts and manage verified status.</p>
+        <div class="filter-bar"><input type="text" id="usersSearch" placeholder="Search users by name, email, or role..." onkeyup="filterUsers()"></div>
+        <div id="usersLoading" class="loading-spinner"><span class="material-symbols-outlined">sensors</span> Loading users data...</div>
+        <div id="usersEmpty" class="empty-state" style="display: none;"><span class="material-symbols-outlined">info</span> No users found in the system.</div>
+        <div class="table-container" id="usersTable" style="display: none;">
+          <table>
+            <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr></thead>
+            <tbody id="usersBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div id="detailModal" class="modal">
+    <div class="modal-content">
+      <h3 id="modalTitle">Details</h3>
+      <div id="modalBody"></div>
+      <button class="modal-close-btn" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <!-- Script tags for dynamic functions -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

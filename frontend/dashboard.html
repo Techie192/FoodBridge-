@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | FoodBridge</title>
+  <style>
+    /* ============================================
+       RESET & ROOT
+       ============================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #1DB954;
+      --primary-dark: #0E8E3E;
+      --dark: #0A0E27;
+      --dark-2: #0F1535;
+      --dark-3: #050816;
+      --light: #F8FAFC;
+      --accent: #FFB800;
+      --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-2: linear-gradient(135deg, #1DB954 0%, #0E8E3E 100%);
+      --gradient-3: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.3);
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--dark);
+      color: var(--light);
+      min-height: 100vh;
+    }
+
+    /* ============================================
+       STICKY HEADER
+       ============================================ */
+    .header {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(22px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 18px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      background: var(--gradient-2);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    /* user avatar + name */
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--gradient-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .user-details { display: flex; flex-direction: column; }
+    .user-name    { font-weight: 600; font-size: 14px; }
+    .user-role    { font-size: 12px; color: rgba(248,250,252,0.55); text-transform: capitalize; }
+
+    /* role badge colour */
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+    .badge-restaurant { background: rgba(29,185,84,0.2);  color: #1DB954; }
+    .badge-ngo        { background: rgba(103,126,234,0.2); color: #667eea; }
+    .badge-compost    { background: rgba(255,184,0,0.2);   color: #FFB800; }
+    .badge-admin      { background: rgba(245,87,108,0.2);  color: #f5576c; }
+
+    /* header buttons */
+    .btn {
+      padding: 9px 18px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: var(--light);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.18);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: var(--gradient-2);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(29,185,84,0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(29,185,84,0.4);
+    }
+
+    /* ============================================
+       MAIN CONTAINER
+       ============================================ */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 42px 5%;
+    }
+
+    /* ── welcome banner ── */
+    .welcome-section { margin-bottom: 38px; }
+
+    .page-title {
+      font-size: 46px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-subtitle {
+      color: rgba(248,250,252,0.6);
+      font-size: 18px;
+    }
+
+    /* ============================================
+       QUICK STATS ROW
+       ============================================ */
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 22px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 28px 24px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* green glow on hover */
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gradient-2);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .stat-card:hover::before { opacity: 0.07; }
+
+    .stat-card:hover {
+      transform: translateY(-7px);
+      box-shadow: 0 18px 50px rgba(29,185,84,0.2);
+      border-color: rgba(29,185,84,0.45);
+    }
+
+    .stat-card > * { position: relative; z-index: 1; }
+
+    .stat-icon   { font-size: 36px; margin-bottom: 12px; display: block; }
+    .stat-value  { font-size: 34px; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
+    .stat-label  { color: rgba(248,250,252,0.55); font-size: 14px; margin-bottom: 8px; }
+    .stat-change { font-size: 13px; color: var(--primary); font-weight: 600; }
+    .stat-change.neutral { color: rgba(248,250,252,0.45); }
+
+    /* ============================================
+       ACTION CARDS  (role-specific portals)
+       ============================================ */
+    .section-label {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      color: var(--light);
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 22px;
+      margin-bottom: 42px;
+    }
+
+    .action-card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 22px;
+      padding: 36px 26px 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .action-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .action-card.green::before  { background: var(--gradient-2); }
+    .action-card.purple::before { background: var(--gradient-1); }
+    .action-card.amber::before  { background: linear-gradient(135deg,#FFB800,#FF8C00); }
+    .action-card.pink::before   { background: var(--gradient-3); }
+
+    .action-card:hover::before  { opacity: 0.13; }
+    .action-card:hover {
+      transform: translateY(-9px);
+      box-shadow: 0 22px 60px rgba(29,185,84,0.25);
+      border-color: rgba(29,185,84,0.4);
+    }
+
+    .action-card > * { position: relative; z-index: 1; }
+
+    .action-icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+      display: block;
+      animation: gentleBounce 3s ease infinite;
+    }
+
+    @keyframes gentleBounce {
+      0%, 100% { transform: translateY(0);   }
+      50%      { transform: translateY(-7px); }
+    }
+
+    .action-card h3 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--light);
+    }
+
+    .action-card p {
+      color: rgba(248,250,252,0.65);
+      line-height: 1.55;
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+
+    .action-btn {
+      display: inline-block;
+      padding: 11px 28px;
+      background: var(--gradient-2);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 16px rgba(29,185,84,0.3);
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 22px rgba(29,185,84,0.4);
+    }
+
+    /* ============================================
+       RECENT ACTIVITY PANEL
+       ============================================ */
+    .activity-section {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 22px;
+      padding: 30px;
+      margin-bottom: 40px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .section-header h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--light);
+    }
+
+    .view-all {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+    .view-all:hover { color: var(--accent); }
+
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    .activity-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: var(--transition);
+    }
+
+    .activity-item:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(29,185,84,0.3);
+    }
+
+    .activity-icon-wrap {
+      width: 46px;
+      height: 46px;
+      border-radius: 13px;
+      background: var(--gradient-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .activity-details { flex: 1; }
+    .activity-title   { font-weight: 600; font-size: 15px; color: var(--light); margin-bottom: 3px; }
+    .activity-time    { font-size: 13px; color: rgba(248,250,252,0.45); }
+
+    .activity-badge {
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .badge-green  { background: rgba(29,185,84,0.15);  color: #1DB954; }
+    .badge-amber  { background: rgba(255,184,0,0.15);  color: #FFB800; }
+    .badge-blue   { background: rgba(103,126,234,0.15);color: #667eea; }
+
+    /* empty state */
+    .empty-state      { text-align: center; padding: 56px 20px; color: rgba(248,250,252,0.45); }
+    .empty-state-icon { font-size: 56px; margin-bottom: 14px; opacity: 0.5; display: block; }
+
+    /* ============================================
+       IMPACT SUMMARY BAR
+       ============================================ */
+    .impact-bar {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(29,185,84,0.25);
+      border-radius: 18px;
+      padding: 24px 28px;
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .impact-item { text-align: center; }
+    .impact-item .impact-num {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .impact-item .impact-lbl {
+      font-size: 13px;
+      color: rgba(248,250,252,0.5);
+      margin-top: 3px;
+    }
+
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 768px) {
+      .page-title        { font-size: 34px; }
+      .quick-stats       { grid-template-columns: repeat(2, 1fr); }
+      .actions-grid      { grid-template-columns: 1fr; }
+      .user-details      { display: none; }
+      .impact-bar        { gap: 28px; }
+    }
+
+    @media (max-width: 480px) {
+      .quick-stats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .stat-card   { padding: 20px 16px; }
+      .stat-value  { font-size: 28px; }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+  <header class="header">
+    <a href="index.html" class="logo"><span class="material-symbols-outlined">yard</span> FoodBridge</a>
+
+    <div class="header-right">
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <div class="user-details">
+          <div class="user-name" id="userName">User</div>
+          <div class="user-role">
+            <span class="badge badge-restaurant" id="userBadge">role</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-secondary" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       MAIN
+       ============================================================ -->
+  <main class="container">
+
+    <!-- welcome -->
+    <div class="welcome-section">
+      <h1 class="page-title">Welcome Back <span class="material-symbols-outlined">waving_hand</span></h1>
+      <p class="page-subtitle" id="welcomeMsg">Choose an action below to get started.</p>
+    </div>
+
+    <!-- quick stats -->
+    <div class="quick-stats">
+      <div class="stat-card">
+        <span class="stat-icon"><span class="material-symbols-outlined">restaurant</span>️</span>
+        <div class="stat-value" id="statDonations">0</div>
+        <div class="stat-label">Total Donations</div>
+        <div class="stat-change">↑ Updated live</div>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-icon">⚖️</span>
+        <div class="stat-value" id="statKg">0</div>
+        <div class="stat-label">Total kg</div>
+        <div class="stat-change">↑ Updated live</div>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-icon"><span class="material-symbols-outlined">public</span></span>
+        <div class="stat-value" id="statCO2">0</div>
+        <div class="stat-label">CO₂ Saved (kg)</div>
+        <div class="stat-change">↑ Keep it up!</div>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-icon">✅</span>
+        <div class="stat-value" id="statActive">0</div>
+        <div class="stat-label">Available Now</div>
+        <div class="stat-change neutral">Real-time</div>
+      </div>
+    </div>
+
+    <!-- impact summary -->
+    <div class="impact-bar">
+      <div class="impact-item">
+        <div class="impact-num" id="impactMeals">—</div>
+        <div class="impact-lbl">Meals Equivalent</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-num" id="impactRestaurants">—</div>
+        <div class="impact-lbl">Restaurants Active</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-num" id="impactNGOs">—</div>
+        <div class="impact-lbl">NGOs Served</div>
+      </div>
+      <div class="impact-item">
+        <div class="impact-num" id="impactClamed">—</div>
+        <div class="impact-lbl">Claimed Today</div>
+      </div>
+    </div>
+
+    <!-- role-specific action cards (injected by JS) -->
+    <div class="section-label">Your Actions</div>
+    <div class="actions-grid" id="actionsContainer"></div>
+
+    <!-- recent activity -->
+    <div class="activity-section">
+      <div class="section-header">
+        <h2>Recent Activity</h2>
+        <a href="admin.html" class="view-all">View All →</a>
+      </div>
+      <div class="activity-list" id="activityList">
+        <div class="empty-state">
+          <span class="empty-state-icon"><span class="material-symbols-outlined">bar_chart</span></span>
+          <p>No recent activity yet</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ============================================================
+       JAVASCRIPT
+       ============================================================ -->
+  <script>
+  (function () {
+    const API = '';
+
+    /* ── read session ── */
+    const userName = localStorage.getItem('userName') || 'User';
+    const userRole = localStorage.getItem('userRole') || 'guest';
+
+    /* ============================================================
+       INIT  –  populate header & welcome
+       ============================================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('userName').textContent  = userName;
+      document.getElementById('userAvatar').textContent = userName.charAt(0).toUpperCase();
+      document.getElementById('welcomeMsg').textContent = `Great to see you, ${userName}! Here is your dashboard.`;
+
+      // badge
+      const badge = document.getElementById('userBadge');
+      badge.textContent = userRole;
+      badge.className   = 'badge badge-' + userRole;
+
+      // load everything in parallel
+      loadRoleActions(userRole);
+      loadStats();
+      loadRecentActivity();
+    });
+
+    /* ============================================================
+       ROLE-SPECIFIC ACTION CARDS
+       ============================================================ */
+    const ACTION_MAP = {
+      restaurant: [
+        { icon:'<span class="material-symbols-outlined">restaurant</span>️', title:'Donate Food',       desc:'Submit surplus food and help communities.',   link:'restaurant.html',          color:'green'  },
+        { icon:'<span class="material-symbols-outlined">location_on</span>', title:'Track Pickups',      desc:'Live GPS tracking of your donation pickups.', link:'location.html',            color:'green'  },
+        { icon:'<span class="material-symbols-outlined">bar_chart</span>', title:'My Analytics',       desc:'See your personal donation statistics.',      link:'dashboard.html',           color:'purple' }
+      ],
+      ngo: [
+        { icon:'<span class="material-symbols-outlined">handshake</span>', title:'Browse Donations',   desc:'Find available edible food near you.',        link:'ngo.html',                 color:'purple' },
+        { icon:'✅', title:'My Claims',          desc:'View and manage accepted donations.',         link:'ngo.html',                 color:'green'  },
+        { icon:'<span class="material-symbols-outlined">trending_up</span>', title:'Impact Report',      desc:'See how many people you have helped.',        link:'dashboard.html',           color:'amber'  }
+      ],
+      compost: [
+        { icon:'♻️', title:'View Collections',   desc:'Browse non-edible waste available now.',      link:'compost.html',             color:'amber'  },
+        { icon:'<span class="material-symbols-outlined">yard</span>', title:'My Schedule',        desc:'Manage your waste collection schedule.',      link:'compost.html',             color:'green'  },
+        { icon:'<span class="material-symbols-outlined">public</span>', title:'Eco Impact',         desc:'CO₂ savings and sustainability metrics.',    link:'dashboard.html',           color:'pink'   }
+      ],
+      admin: [
+        { icon:'<span class="material-symbols-outlined">admin_panel_settings</span>', title:'Admin Panel',        desc:'Manage users, donations & settings.',         link:'admin.html',               color:'pink'   },
+        { icon:'<span class="material-symbols-outlined">bar_chart</span>', title:'Full Analytics',     desc:'Platform-wide stats & insights.',             link:'admin.html',               color:'purple' },
+        { icon:'⚙️', title:'System',            desc:'Configure platform features.',                link:'admin.html',               color:'green'  }
+      ]
+    };
+
+    function loadRoleActions(role) {
+      const cards = ACTION_MAP[role] || ACTION_MAP['ngo'];
+      document.getElementById('actionsContainer').innerHTML = cards.map(c => `
+        <a href="${c.link}" class="action-card ${c.color}" style="text-decoration:none;">
+          <span class="action-icon">${c.icon}</span>
+          <h3>${c.title}</h3>
+          <p>${c.desc}</p>
+          <span class="action-btn">Get Started →</span>
+        </a>
+      `).join('');
+    }
+
+    /* ============================================================
+       LIVE STATS  –  fetch from backend, fall back to demo data
+       ============================================================ */
+    async function loadStats() {
+      try {
+        const [ngoRes, compostRes] = await Promise.all([
+          fetch(`${API}/api/food/ngo`),
+          fetch(`${API}/api/food/compost`)
+        ]);
+
+        const ngo     = ngoRes.ok     ? await ngoRes.json()     : [];
+        const compost = compostRes.ok ? await compostRes.json() : [];
+        const all     = [...ngo, ...compost];
+
+        const totalKg    = all.reduce((s, d) => s + (d.quantity || 0), 0);
+        const available  = all.filter(d => d.status === 'available').length;
+        const co2        = (totalKg * 0.5).toFixed(1);
+        const meals      = Math.round(totalKg * 3.2);                // ~3.2 meals / kg
+
+        animateCounter('statDonations', all.length);
+        animateCounter('statKg',        totalKg);
+        animateCounter('statCO2',       parseFloat(co2));
+        animateCounter('statActive',    available);
+
+        // impact bar
+        document.getElementById('impactMeals').textContent       = meals.toLocaleString();
+        document.getElementById('impactRestaurants').textContent  = '—';       // no user endpoint yet
+        document.getElementById('impactNGOs').textContent         = '—';
+        document.getElementById('impactClamed').textContent       = available;
+
+      } catch (err) {
+        console.warn('Backend not reachable – using demo numbers.', err);
+        useDemoStats();
+      }
+    }
+
+    function useDemoStats() {
+      animateCounter('statDonations', 24);
+      animateCounter('statKg',        87.5);
+      animateCounter('statCO2',       43.8);
+      animateCounter('statActive',    6);
+      document.getElementById('impactMeals').textContent       = '280';
+      document.getElementById('impactRestaurants').textContent  = '8';
+      document.getElementById('impactNGOs').textContent         = '5';
+      document.getElementById('impactClamed').textContent       = '6';
+    }
+
+    /* ── smooth number counter animation ── */
+    function animateCounter(id, target) {
+      const el    = document.getElementById(id);
+      const start = performance.now();
+      const dur   = 1200;                       // ms
+      const isFloat = String(target).includes('.');
+
+      (function step(now) {
+        const t     = Math.min((now - start) / dur, 1);
+        const eased = 1 - Math.pow(1 - t, 3);   // ease-out cubic
+        const val   = eased * target;
+        el.textContent = isFloat ? val.toFixed(1) : Math.round(val).toLocaleString();
+        if (t < 1) requestAnimationFrame(step);
+      })(start);
+    }
+
+    /* ============================================================
+       RECENT ACTIVITY  –  fetch from backend, fall back to demo
+       ============================================================ */
+    async function loadRecentActivity() {
+      try {
+        const res  = await fetch(`${API}/api/food/all`);
+        if (!res.ok) throw new Error('not ok');
+        const all  = await res.json();
+
+        if (!all || all.length === 0) { renderDemoActivity(); return; }
+
+        // take latest 5
+        const items = all.slice(0, 5).map(d => ({
+          icon:  d.condition === 'edible' ? '<span class="material-symbols-outlined">restaurant</span>️' : '♻️',
+          title: `${d.foodItem || 'Food'} — ${d.quantity || 0} kg`,
+          time:  timeAgo(d.createdAt),
+          badge: d.status === 'available' ? { label:'Available', cls:'badge-green' }
+               : d.status === 'claimed'   ? { label:'Claimed',   cls:'badge-amber' }
+               :                            { label: d.status,   cls:'badge-blue'  }
+        }));
+        renderActivity(items);
+
+      } catch (err) {
+        console.warn('Activity endpoint not reachable – demo data.', err);
+        renderDemoActivity();
+      }
+    }
+
+    function renderDemoActivity() {
+      renderActivity([
+        { icon:'<span class="material-symbols-outlined">restaurant</span>️', title:'Fresh Vegetables donated — 12 kg',   time:'2 hours ago',  badge:{ label:'Available', cls:'badge-green' } },
+        { icon:'✅',  title:'Rice & Lentils claimed by NGO Hope', time:'5 hours ago',  badge:{ label:'Claimed',   cls:'badge-amber' } },
+        { icon:'<span class="material-symbols-outlined">local_shipping</span>',  title:'Banana Peels pickup completed',      time:'1 day ago',    badge:{ label:'Completed', cls:'badge-blue'  } },
+        { icon:'♻️',  title:'Expired Bread sent to compost',      time:'1 day ago',    badge:{ label:'Available', cls:'badge-green' } },
+        { icon:'<span class="material-symbols-outlined">restaurant</span>️',  title:'Leftover Biryani donated — 8 kg',   time:'2 days ago',   badge:{ label:'Claimed',   cls:'badge-amber' } }
+      ]);
+    }
+
+    function renderActivity(items) {
+      document.getElementById('activityList').innerHTML = items.map(a => `
+        <div class="activity-item">
+          <div class="activity-icon-wrap">${a.icon}</div>
+          <div class="activity-details">
+            <div class="activity-title">${a.title}</div>
+            <div class="activity-time">${a.time}</div>
+          </div>
+          <span class="activity-badge ${a.badge.cls}">${a.badge.label}</span>
+        </div>
+      `).join('');
+    }
+
+    /* ── helper: relative time ── */
+    function timeAgo(dateStr) {
+      if (!dateStr) return 'just now';
+      const diff = (Date.now() - new Date(dateStr)) / 1000;
+      if (diff < 60)   return 'just now';
+      if (diff < 3600) return Math.round(diff / 60)  + ' min ago';
+      if (diff < 86400) return Math.round(diff / 3600) + (Math.round(diff/3600)===1 ? ' hour ago' : ' hours ago');
+      return Math.round(diff / 86400) + (Math.round(diff/86400)===1 ? ' day ago' : ' days ago');
+    }
+
+    /* ============================================================
+       LOGOUT
+       ============================================================ */
+    window.logout = function () {
+      localStorage.clear();
+      window.location.href = 'index.html';
+    };
+
+  })();
+  </script>
+</body>
+</html>
